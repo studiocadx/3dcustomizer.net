@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Customizer - OpenSCAD Web Editor</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">🔧</span>
+                    3D Customizer
+                </h1>
+                <div class="header-actions">
+                    <button id="new-file" class="btn btn-secondary">New</button>
+                    <button id="open-file" class="btn btn-secondary">Open</button>
+                    <button id="save-file" class="btn btn-secondary">Save</button>
+                    <button id="render-model" class="btn btn-primary">Render</button>
+                    <button id="export-stl" class="btn btn-success">Export STL</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <h3>OpenSCAD Editor</h3>
+                    <div class="editor-controls">
+                        <button id="format-code" class="btn btn-small">Format</button>
+                        <button id="toggle-theme" class="btn btn-small">Theme</button>
+                    </div>
+                </div>
+                <div id="editor-container" class="editor-container"></div>
+                <div class="editor-footer">
+                    <div class="status-bar">
+                        <span id="cursor-position">Line 1, Column 1</span>
+                        <span id="file-status">Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="viewer-panel">
+                <div class="panel-header">
+                    <h3>3D Viewer</h3>
+                    <div class="viewer-controls">
+                        <button id="reset-camera" class="btn btn-small">Reset View</button>
+                        <button id="wireframe-toggle" class="btn btn-small">Wireframe</button>
+                        <button id="fullscreen-viewer" class="btn btn-small">Fullscreen</button>
+                    </div>
+                </div>
+                <div id="viewer-container" class="viewer-container">
+                    <div id="loading-indicator" class="loading-indicator hidden">
+                        <div class="spinner"></div>
+                        <p>Rendering model...</p>
+                    </div>
+                </div>
+                <div class="viewer-footer">
+                    <div class="viewer-info">
+                        <span id="model-info">No model loaded</span>
+                        <span id="render-time"></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="bottom-panel">
+            <div class="panel-header">
+                <h3>Console</h3>
+                <button id="clear-console" class="btn btn-small">Clear</button>
+            </div>
+            <div id="console-output" class="console-output"></div>
+        </div>
+
+        <div id="file-input" class="hidden">
+            <input type="file" accept=".scad,.stl" />
+        </div>
+
+        <div id="modal-overlay" class="modal-overlay hidden">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 id="modal-title">Modal Title</h3>
+                    <button id="modal-close" class="btn btn-close">×</button>
+                </div>
+                <div id="modal-content" class="modal-content"></div>
+                <div class="modal-footer">
+                    <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+                    <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
