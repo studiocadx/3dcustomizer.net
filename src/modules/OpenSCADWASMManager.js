@@ -1,3 +1,5 @@
+import OpenSCAD from '/openscad/openscad.js';
+
 export class OpenSCADWASMManager {
     constructor() {
         this.openscad = null;
@@ -18,10 +20,7 @@ export class OpenSCADWASMManager {
         this.isInitializing = true;
 
         try {
-            // Load OpenSCAD WASM module
-            const OpenSCAD = await this.loadOpenSCADModule();
-            
-            // Initialize OpenSCAD instance
+            // Initialize OpenSCAD instance using the imported module
             this.openscad = await OpenSCAD({
                 noInitialRun: true,
                 print: (text) => console.log('OpenSCAD:', text),
@@ -52,54 +51,16 @@ export class OpenSCADWASMManager {
         }
     }
 
-    async loadOpenSCADModule() {
-        try {
-            // Try to load from the public directory
-            const script = document.createElement('script');
-            script.src = '/openscad/openscad.js';
-            
-            return new Promise((resolve, reject) => {
-                script.onload = () => {
-                    if (window.OpenSCAD) {
-                        resolve(window.OpenSCAD);
-                    } else {
-                        reject(new Error('OpenSCAD module not found after loading script'));
-                    }
-                };
-                script.onerror = () => {
-                    reject(new Error('Failed to load OpenSCAD script. Please ensure openscad.js is in /public/openscad/'));
-                };
-                document.head.appendChild(script);
-            });
-        } catch (error) {
-            throw new Error(`Failed to load OpenSCAD module: ${error.message}`);
-        }
-    }
-
     async addFontsSupport() {
         try {
-            const fontsScript = document.createElement('script');
-            fontsScript.src = '/openscad/openscad.fonts.js';
+            const fontsModule = await import('/openscad/openscad.fonts.js').catch(() => null);
             
-            await new Promise((resolve, reject) => {
-                fontsScript.onload = () => {
-                    try {
-                        if (window.addFonts && this.openscad) {
-                            window.addFonts(this.openscad);
-                            console.log('OpenSCAD fonts support added');
-                        }
-                        resolve();
-                    } catch (err) {
-                        console.warn('Failed to add fonts support:', err);
-                        resolve(); // Don't fail initialization for fonts
-                    }
-                };
-                fontsScript.onerror = () => {
-                    console.warn('OpenSCAD fonts script not found, continuing without font support');
-                    resolve(); // Don't fail initialization for fonts
-                };
-                document.head.appendChild(fontsScript);
-            });
+            if (fontsModule && fontsModule.addFonts && this.openscad) {
+                fontsModule.addFonts(this.openscad);
+                console.log('OpenSCAD fonts support added');
+            } else {
+                console.warn('OpenSCAD fonts module not found or invalid, continuing without font support');
+            }
         } catch (error) {
             console.warn('Failed to load fonts support:', error);
         }
@@ -107,28 +68,14 @@ export class OpenSCADWASMManager {
 
     async addMCADSupport() {
         try {
-            const mcadScript = document.createElement('script');
-            mcadScript.src = '/openscad/openscad.mcad.js';
+            const mcadModule = await import('/openscad/openscad.mcad.js').catch(() => null);
             
-            await new Promise((resolve, reject) => {
-                mcadScript.onload = () => {
-                    try {
-                        if (window.addMCAD && this.openscad) {
-                            window.addMCAD(this.openscad);
-                            console.log('OpenSCAD MCAD support added');
-                        }
-                        resolve();
-                    } catch (err) {
-                        console.warn('Failed to add MCAD support:', err);
-                        resolve(); // Don't fail initialization for MCAD
-                    }
-                };
-                mcadScript.onerror = () => {
-                    console.warn('OpenSCAD MCAD script not found, continuing without MCAD support');
-                    resolve(); // Don't fail initialization for MCAD
-                };
-                document.head.appendChild(mcadScript);
-            });
+            if (mcadModule && mcadModule.addMCAD && this.openscad) {
+                mcadModule.addMCAD(this.openscad);
+                console.log('OpenSCAD MCAD support added');
+            } else {
+                console.warn('OpenSCAD MCAD module not found or invalid, continuing without MCAD support');
+            }
         } catch (error) {
             console.warn('Failed to load MCAD support:', error);
         }
