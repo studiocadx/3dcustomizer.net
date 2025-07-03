@@ -18,19 +18,23 @@ export class OpenSCADWASMManager {
         this.isInitializing = true;
 
         try {
-            // Dynamically import OpenSCAD module from public directory
-            const OpenSCADModule = await import('/openscad/openscad.js');
-            const OpenSCAD = OpenSCADModule.default || OpenSCADModule;
+            // Dynamically import OpenSCAD module from src directory
+            const openscadModule = await import('../openscad/openscad.js');
+            const OpenSCAD = openscadModule.default || openscadModule.OpenSCAD || openscadModule;
 
-            // Initialize OpenSCAD instance using the imported module
+            if (!OpenSCAD || typeof OpenSCAD !== 'function') {
+                throw new Error('OpenSCAD module not found after loading script');
+            }
+
+            // Initialize OpenSCAD instance
             this.openscad = await OpenSCAD({
                 noInitialRun: true,
                 print: (text) => console.log('OpenSCAD:', text),
                 printErr: (text) => console.error('OpenSCAD Error:', text),
                 locateFile: (path, prefix) => {
-                    // Ensure WASM files are loaded from the correct path
+                    // Ensure WASM files are loaded from the correct path in src
                     if (path.endsWith('.wasm')) {
-                        return '/openscad/' + path;
+                        return new URL(`../openscad/${path}`, import.meta.url).href;
                     }
                     return prefix + path;
                 }
@@ -55,7 +59,7 @@ export class OpenSCADWASMManager {
 
     async addFontsSupport() {
         try {
-            const fontsModule = await import('/openscad/openscad.fonts.js').catch(() => null);
+            const fontsModule = await import('../openscad/openscad.fonts.js').catch(() => null);
             
             if (fontsModule && fontsModule.addFonts && this.openscad) {
                 fontsModule.addFonts(this.openscad);
@@ -70,7 +74,7 @@ export class OpenSCADWASMManager {
 
     async addMCADSupport() {
         try {
-            const mcadModule = await import('/openscad/openscad.mcad.js').catch(() => null);
+            const mcadModule = await import('../openscad/openscad.mcad.js').catch(() => null);
             
             if (mcadModule && mcadModule.addMCAD && this.openscad) {
                 mcadModule.addMCAD(this.openscad);
