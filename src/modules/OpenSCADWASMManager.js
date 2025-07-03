@@ -1,5 +1,3 @@
-import OpenSCAD from '/openscad/openscad.js';
-
 export class OpenSCADWASMManager {
     constructor() {
         this.openscad = null;
@@ -20,6 +18,10 @@ export class OpenSCADWASMManager {
         this.isInitializing = true;
 
         try {
+            // Dynamically import OpenSCAD module from public directory
+            const OpenSCADModule = await import('/openscad/openscad.js');
+            const OpenSCAD = OpenSCADModule.default || OpenSCADModule;
+
             // Initialize OpenSCAD instance using the imported module
             this.openscad = await OpenSCAD({
                 noInitialRun: true,
