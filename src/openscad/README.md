@@ -21,12 +21,14 @@ https://github.com/openscad/openscad-wasm/releases
 2. Download the latest release (e.g., `openscad-wasm-2022.03.20.zip`)
 3. Extract the files and copy them to this directory:
    ```
-   public/openscad/
+   src/openscad/
    ├── openscad.js
    ├── openscad.wasm
    ├── openscad.fonts.js (optional)
    └── openscad.mcad.js (optional)
    ```
+
+**Important**: These files must be placed in `src/openscad/` (not `public/openscad/`) so that Vite can properly resolve the dynamic imports in the module system.
 
 ## Features Enabled
 
@@ -73,7 +75,7 @@ Total: ~11.5MB for full functionality
 If OpenSCAD WASM fails to load:
 
 1. Check browser console for error messages
-2. Ensure all files are in the correct directory
+2. Ensure all files are in the `src/openscad/` directory (not `public/openscad/`)
 3. Verify files are not corrupted (re-download if needed)
 4. Check that your web server serves .wasm files with correct MIME type
 5. Ensure CORS is properly configured if serving from different domain
@@ -86,3 +88,11 @@ OpenSCAD WASM requires:
 - Sufficient memory (recommend 4GB+ RAM)
 
 For development with Vite, these requirements are automatically handled.
+
+## Vite Configuration Notes
+
+Since these files are now in `src/openscad/`, Vite will:
+- Include them in the module graph for proper bundling
+- Allow dynamic imports to resolve correctly
+- Handle WASM files appropriately during build
+- Ensure proper loading paths in both development and production
